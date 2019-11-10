@@ -119,19 +119,19 @@ namespace kerbal_impact
             Log("Crashed on "+crashBody.name);
             //find all craft orbiting and landed at this body
             foreach (Vessel vessel in FlightGlobals.Vessels.Where(v=>v.orbit.referenceBody==crashBody)) {
-                Log("Found a vessel "+vessel.GetName());
+                Log("Found a vessel "+vessel.GetName() + " in situation "+ vessel.situation);
                 if (asteroid==null) {
                     if (vessel.situation==Vessel.Situations.LANDED) {
                         landedVessel(crashBody, vessel, crashVessel);
                     }
-                    if (vessel.situation == Vessel.Situations.ORBITING)
-                    {
+                    if (vessel.situation == Vessel.Situations.ORBITING || vessel.situation == Vessel.Situations.FLYING)
+                    { //KSP seems to be identifying some orbiting vessels as flying
                         orbitingVessel(crashBody, vessel, crashVessel);
                     }
                 }
                 else
                 {
-                    if (vessel.situation == Vessel.Situations.ORBITING)
+                    if (vessel.situation == Vessel.Situations.ORBITING || vessel.situation == Vessel.Situations.FLYING)
                     {
                         nearAsteroidVessel(vessel, crashVessel, asteroid, crashBody);
                     }
@@ -300,7 +300,7 @@ namespace kerbal_impact
                 Localizer.Format(flavourText, energyFormat(crashEnergy), crashBody.GetDisplayName()), false, flightID);
 
             ScreenMessages.PostScreenMessage(
-                Localizer.Format("Recorded seismic impact of <<1>> on <<2>>", energyFormat(crashEnergy), crashBody.GetDisplayName()),
+                Localizer.Format("#autoLOC_Screen_Seismic", energyFormat(crashEnergy), crashBody.GetDisplayName()),
                 5.0f, ScreenMessageStyle.UPPER_RIGHT);
 
 
@@ -318,10 +318,6 @@ namespace kerbal_impact
             String biome = ScienceUtil.GetExperimentBiome(crashBody, crashVessel.latitude, crashVessel.longitude);
             CBAttributeMapSO m = crashBody.BiomeMap;
             CBAttributeMapSO.MapAttribute[] atts = m.Attributes;
-            foreach (CBAttributeMapSO.MapAttribute att in atts)
-            {
-                Log("att=" + att.name+"-"+att.value);
-            }
             ScienceSubject subject = ResearchAndDevelopment.GetExperimentSubject(experiment, ExperimentSituations.InSpaceLow, crashBody, biome, biome);
             double science = subject.scienceCap;
             Log("Impact took place in " + biome + " at " + crashVessel.latitude + "," + crashVessel.longitude);
@@ -336,7 +332,7 @@ namespace kerbal_impact
 				Localizer.Format(flavourText, biome, crashBody.GetDisplayName()), false, flightID);
 
             ScreenMessages.PostScreenMessage(
-                Localizer.Format("Recorded spectrographic impact data at <<1>> on <<2>>", biome, crashBody.GetDisplayName()),
+                Localizer.Format("#autoLOC_Screen_Spectrum", biome, crashBody.GetDisplayName()),
                 5.0f, ScreenMessageStyle.UPPER_RIGHT);
 
             return data;
@@ -365,7 +361,7 @@ namespace kerbal_impact
                 Localizer.Format(flavourText, asteroid.GetName(), crashBody.GetDisplayName()), false, flightID);
 
             ScreenMessages.PostScreenMessage(
-                Localizer.Format("Recorded spectrographic impact data at <<1>> around <<2>>", asteroid.GetName(), crashBody.GetDisplayName()),
+                Localizer.Format("#autoLOC_Screen_Asteroid", asteroid.GetName(), crashBody.GetDisplayName()),
                 5.0f, ScreenMessageStyle.UPPER_RIGHT);
 
             return data;

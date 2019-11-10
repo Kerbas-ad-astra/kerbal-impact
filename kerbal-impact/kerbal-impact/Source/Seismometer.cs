@@ -1,4 +1,5 @@
-﻿using KSP.UI.Screens.Flight.Dialogs;
+﻿using KSP.Localization;
+using KSP.UI.Screens.Flight.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,13 +30,10 @@ namespace kerbal_impact
 
         public static void OnSave(ConfigNode node, ImpactScienceData data)
         {
-            ImpactMonitor.Log("Saving seismometer");
-
             node.RemoveNodes("ScienceData"); //** Prevent duplicates            
             if (data != null)
             {
                 ConfigNode storedDataNode = node.AddNode("ScienceData");
-                ImpactMonitor.Log("saving data");
                 data.SaveImpact(storedDataNode);
             }
         }
@@ -140,7 +138,7 @@ namespace kerbal_impact
         }
         public void TransmitData(ScienceData data)
         {
-            ImpactMonitor.Log("CAlling transmit data from seismomenter");
+            ImpactMonitor.Log("Calling transmit data from seismomenter");
             expDialog = null;
             List<IScienceDataTransmitter> tranList = vessel.FindPartModulesImplementing<IScienceDataTransmitter>();
             if (tranList.Count > 0 && result!=null)
@@ -151,9 +149,9 @@ namespace kerbal_impact
                 ImpactMonitor.getInstance().scienceToKSC(result);
                 DumpData(result);
             }
-            else ScreenMessages.PostScreenMessage("No transmitters available on this vessel.", 4f, ScreenMessageStyle.UPPER_LEFT);
+            else ScreenMessages.PostScreenMessage(Localizer.Format("#autoLOC_Screen_NoTrans"), 4f, ScreenMessageStyle.UPPER_LEFT);
         }
-        [KSPEvent(guiActive = true, guiName = "Review Data", active = false)]
+        [KSPEvent(guiActive = true, guiName = "#autoLOC_Seismometer_Review", active = false)]
         public void reviewEvent()
         {
             ReviewData();
